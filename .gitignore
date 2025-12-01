@@ -1,85 +1,60 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
+
+# C extensions
 *.so
-.Python
+
+# Distribution / packaging
 build/
 develop-eggs/
 dist/
-downloads/
 eggs/
-.eggs/
 lib/
 lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
-
-# Django
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-media/
-staticfiles/
-
-# Environment
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Node.js
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.npm
-.yarn-integrity
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
+# OS files
+.DS_Store
+thumbs.db
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
 .tox/
+.coverage
 .cache
 nosetests.xml
 coverage.xml
-*.cover
-.hypothesis/
 
-# Docker
-.dockerignore
+# Flake8 reports
+report.txt
+flake8.txt
 
-# Temporary files
-tmp/
-temp/
-*.tmp
-*.temp
+# Pylint report
+pylint.txt
 
-# Git specific
-.git/
-.gitignore
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# Django stuff:
+*.log
+*.pot
+
+# Docker Compose Override
+docker-compose.override.yml

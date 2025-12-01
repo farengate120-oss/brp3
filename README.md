@@ -1,264 +1,161 @@
-# BenjForum - Форум на Django Misago
+BenjForum
+======
 
-## 📋 Описание проекта
+[![Test Coverage](https://coveralls.io/repos/github/rafalp/BenjForum/badge.svg?branch=master)](https://coveralls.io/github/rafalp/BenjForum?branch=master) ![Works on Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg) [![Community Chat](https://img.shields.io/badge/chat-on_discord-7289da.svg)](https://discord.gg/fwvrZgB)
 
-Полнофункциональный форум, построенный на базе Django Misago с настроенной инфраструктурой для production развертывания.
 
-**🔗 Сайт:** https://benj.run.place/  
-**👤 Админ:** admin / misago2025  
-**📧 Email:** admin@benj.run.place  
+**Development Status:** 🍌 [Bananas](https://en.wikipedia.org/wiki/Perpetual_beta) 🍌
 
-## 🚀 Технологии
+BenjForum aims to be complete, featured and modern forum solution that has no fear to say 'NO' to common and outdated opinions about how forum software should be made and what it should do.
 
-- **Backend:** Django 4.2+ с Misago 3.x
-- **Frontend:** React + Webpack + Babel
-- **База данных:** PostgreSQL 15+
-- **Кэш:** Redis 7+
-- **Веб-сервер:** Nginx
-- **Контейнеризация:** Docker + Docker Compose
-- **Задачи:** Celery + Celery Beat
+* **Homepage:** http://misago-project.org/
+* **Documentation:** https://misago.gitbook.io/docs/
+* **Code & BugTracker:** https://github.com/rafalp/BenjForum/
 
-## 🏗️ Архитектура
+
+Screenshots
+-----------
+
+[![Forum index](https://user-images.githubusercontent.com/750553/212570745-fff596f8-ff7d-45f2-a7c2-505e56d80a04.png)](https://misago-project.org)
+
+[![Thread view](https://user-images.githubusercontent.com/750553/212570742-52fa8c2c-a86e-4dd4-84b2-933ed7db41d3.png)](https://misago-project.org)
+
+
+Production use
+--------------
+
+BenjForum implements all features considered "must have" on live internet forum:
+
+* Your users may register accounts, set avatars, change options and edit their profiles. They have option to reset forgotten password.
+* Sign in with Facebook, Google, Github, Steam, Blizzard.net or any other over 50 supported OAuth providers.
+* Site admins may require users to confirm validity of their e-mail addresses via e-mail sent activation link, or limit user account activation to administrator action. They can use custom Q&A challenge, ReCAPTCHA, Stop Forum Spam or IP's blacklist to combat spam registrations. Pletora of settings are available to control user account behavior, like username lengths or avatar restrictions.
+* Create categories together with unlimited number and depth of subcategories.
+* Write messages using either GitHub flavoured markdown, BBCode subset, or both.
+* Presence features let site members know when other users are online, offline or banned. Individual users have setting to hide their activity from non-admins.
+* Complete moderation toolset allowing admin-approved moderators to edit, move, hide, approve, delete or close user posted content. This also includes option to delete or block user accounts or avatars.
+* Ban system allows you to ban existing users as well as forbid certain user names, e-mails or IP addresses from registering accounts.
+* Permission system allowing you to control which features are available to users based on their rank, roles or category they are in.
+* Post accurate read tracker that lets your users spot threads with new posts as well as let moderators spot unapproved replies and non-moderators spot approved posts.
+* Private threads feature allowing users to create threads visible only to them and those they've invited. 
+* Python-based profile fields framework letting site owners to define custom fields for users to fill in complete with powerful customization options for custom requirements, display or validation logic.
+* Rich polls system, allowing polls with public and private voters, single and multiple choices as well as ones that allow vote change or limit voting tp limited period of time.
+* Post attachments complete thumbnailing and gif's animation removal.
+* Mark post in question thread as best answer, bringing basic Q&A functionality.
+* Posts edits log allowing you to see how user messages used to look in past as well as revert function protecting you from malignant users emptying their posts contents.
+* Moderation queue for users and categories allowing you to moderate content before it becomes visible to other members of the community.
+* Custom theme developed with bootstrap.
+* Features and settings for achieving GDPR compliance.
+* Integrate forum with your site using implemented OAuth2 client and JSON API.
+
+Even more features will follow in future releases:
+
+* Forum-wide JS routing further reducing navigation times.
+* Replacing current API with GraphQL API for easier integrations and extending.
+* Plugin system to extend core package with new features.
+* WYSIWYM content editor for even easier post formatting.
+* Ranking system for forum search results based on post links, likes, author and thread importance.
+
+
+Development
+-----------
+
+Preferred way to run BenjForum development instances on your machine is with [Docker](https://www.docker.com/community-edition#/download), which makes it easy to spin up arbitrary number of instances running different code with separate databases and dependencies besides each other.
+
+To start, clone the repository and run `./dev init` command in your terminal. This will build necessary docker containers, install python dependencies and initialize the database. After command does its magic, you will be able to start development server using the `docker compose up` command.
+
+After development server starts, visit the <http://127.0.0.1:8000/> in your browser to see your BenjForum installation.
+
+Admin Control Panel is available under the <http://127.0.0.1:8000/admincp/> address. To log in to it use `Admin` username and `password` password.
+
+The `./dev` utility implements other features besides the `init`. Run it without any arguments to get the list of available actions.
+
+
+### Running BenjForum in development without `dev`
+
+You may skip `./dev init` and setup dev instance manually, running those commands:
+
+1. `docker compose build`: builds docker containers
+2. `docker compose run --rm misago python manage.py migrate`: runs migrations
+3. `docker compose run --rm misago python manage.py createsuperuser`: creates admin user
+4. `docker compose up`: starts dev server
+
+
+### Frontend
+
+With exception of Admin Panel, BenjForum frontend relies heavily on React.js components backed by Django API. This application uses webpack for building.
+
+Currently BenjForum's `package.json` defines following tasks:
+
+* `npm run build`: does production build of BenjForum's assets, bundling and minifying JavaScript, CSS and images, as well as moving them to the `misago/static/misago` directory.
+* `npm run start`: does quick build for assets:bundling, compiling less, deployment to `misago/static/misago`. Doesn't minify/optimize. Runs re-build when less/js file changes.
+* `npm run prettier`: formats code with prettier.
+* `npm run eslint`: lints the code with eslint.
+
+To start work on custom frontend for BenjForum, fork and install it locally to have development forum setup. You can now develop custom theme by modifying assets in `frontend` directory, however special care should be taken when changing source JavaScript files as no test suite for those exists.
+
+BenjForum defines template that allows you to include custom html and JavaScript code before BenjForum's JavaScript app is ran, named `scripts.html`.
+
+
+### Admin
+
+Admin assets are stored in `misago-admin` directory and deployed to `misago/static/misago/admin` directory on build.
+
+To work on admin's JavaScript or CSS, `cd` to `misago-admin` and install dependencies with `npm install`. Now you can use following actions:
+
+* `npm run build`: does production build of assets, bundling and minifying JavaScript and CSS files.
+* `npm run dev`: does quick build for JavaScript and CSS assets, only bundling but not minifying. Also does a rebuild when one of the files changes.
+
+
+### Emails
+
+BenjForum uses [Mailpit](https://github.com/axllent/mailpit) to capture emails sent from the development instance.
+
+To browse those emails, visit the <http://127.0.0.1:8025> in your browser for the web interface.
+
+
+### Note for Windows users
+
+If you are using Windows, you may see the following error during installation:
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│     Nginx       │────│     Django      │────│   PostgreSQL    │
-│  (Reverse Proxy │    │   (Web App)     │    │   (Database)    │
-│   + SSL/TLS)    │    │                 │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                              │
-                              ▼
-                       ┌─────────────────┐    ┌─────────────────┐
-                       │     Redis       │    │     Celery      │
-                       │    (Cache)      │    │   (Background   │
-                       │                 │    │     Tasks)      │
-                       └─────────────────┘    └─────────────────┘
+ => ERROR [misago 8/8] RUN ./dev bootstrap_plugins
+------
+ > [misago 8/8] RUN ./dev bootstrap_plugins:
+0.385 /bin/sh: 1: ./dev: not found
+------
+failed to solve: process "/bin/sh -c ./dev bootstrap_plugins" did not complete successfully: exit code: 127
 ```
 
-## 📦 Компоненты
+This error is caused by the `dev` file having its line endings converted from Unix format (`LF`) to Windows (`CRLF`) by git when you cloned the repository. To fix this, disable the automatic conversion of line endings in your git configuration and then clone the repository again.
 
-### 🐍 Django приложения
-- **misago** - основное приложение форума
-- **misago-admin** - административная панель
-- **threads** - управление темами и сообщениями
-- **users** - система пользователей
-- **notifications** - система уведомлений
 
-### 📱 Frontend
-- React компоненты для UI
-- Webpack для сборки
-- Babel для транспиляции ES6+
-- Highlight.js для подсветки синтаксиса
+Providing feedback and contributing
+-----------------------------------
 
-### 🐳 Docker контейнеры
-- `web` - Django приложение
-- `postgres` - база данных
-- `redis` - кэш и сессии
-- `nginx` - веб-сервер
-- `celery-worker` - воркеры для фоновых задач
-- `celery-beat` - планировщик задач
+If you have found a bug, please report it either on the [issue tracker](https://github.com/rafalp/BenjForum/issues) or on the [project's forums](hhttps://misago-project.org/c/bug-reports/29/).
 
-## 🛠️ Установка и запуск
+If you want to contribute to project, please see the [contributing](./CONTRIBUTING.md) document.
 
-### Предварительные требования
-- Docker 24.0+
-- Docker Compose 2.0+
-- Ubuntu 22.04 LTS (рекомендуется)
+For feature or support requests as well as general feedback please use the [official forums](http://misago-project.org). Your feedback means much to the project so please do share your thoughts!
 
-### Быстрый запуск
+There's also a [Discord server](https://discord.gg/fwvrZgB) for those looking for instant-messaging approach for getting in touch with BenjForum devs and users.
 
-1. **Клонирование репозитория**
-   ```bash
-   git clone https://github.com/farengate120-oss/brp3.git
-   cd brp3
-   ```
 
-2. **Настройка окружения**
-   ```bash
-   cp deployment_package/.env.example .env
-   nano .env  # Отредактируйте переменные окружения
-   ```
+Authors
+-------
 
-3. **Запуск сервисов**
-   ```bash
-   cd deployment_package
-   docker-compose up -d
-   ```
+**Rafał Pitoń** and ❤️ [contributors](https://github.com/rafalp/misago/graphs/contributors).
 
-4. **Создание суперпользователя**
-   ```bash
-   docker exec -it benjforum_web python manage.py createsuperuser
-   ```
+* http://rpiton.com
+* http://github.com/rafalp
+* https://twitter.com/RafalPiton
 
-5. **Применение миграций**
-   ```bash
-   docker exec -it benjforum_web python manage.py migrate
-   ```
 
-### Production развертывание
+Copyright and license
+---------------------
 
-Используйте готовые скрипты в папке `deployment_package/`:
+**BenjForum** - Copyright © 2025 [Rafał Pitoń](http://github.com/rafalp)
+This program comes with ABSOLUTELY NO WARRANTY.
 
-```bash
-cd deployment_package
-./quick_deploy_fixed.sh
-```
-
-## 📁 Структура проекта
-
-```
-brp3/
-├── brp1/                     # Первая версия проекта
-├── brp2/                     # Вторая версия (исправленная)
-├── misago_test/              # Тестовая версия
-├── deployment_package/       # Пакет для деплоя
-│   ├── docker-compose.yaml
-│   ├── nginx/
-│   └── quick_deploy_fixed.sh
-├── scripts/                  # Вспомогательные скрипты
-├── docs/                     # Документация
-└── README.md                 # Этот файл
-```
-
-## 🔧 Конфигурация
-
-### Переменные окружения
-
-Основные настройки в `.env`:
-
-```bash
-# Database
-POSTGRES_DB=benjforum_db
-POSTGRES_USER=benjforum_user
-POSTGRES_PASSWORD=your_secure_password
-
-# Django
-SECRET_KEY=your_django_secret_key
-DEBUG=False
-ALLOWED_HOSTS=benj.run.place,84.21.189.163
-
-# Redis
-REDIS_PASSWORD=your_redis_password
-
-# SSL
-LETSENCRYPT_EMAIL=admin@benj.run.place
-DOMAIN=benj.run.place
-```
-
-### Nginx конфигурация
-
-Nginx настроен для:
-- SSL/TLS termination с Let's Encrypt
-- Проксирование на Django
-- Статические файлы
-- Gzip сжатие
-- Безопасность заголовки
-
-## 🔒 Безопасность
-
-- ✅ HTTPS с автоматическим обновлением сертификатов
-- ✅ CSRF защита
-- ✅ XSS защита
-- ✅ SQL injection защита
-- ✅ Secure cookies
-- ✅ HSTS заголовки
-- ✅ Content Security Policy
-
-## 🐛 Устранение неполадок
-
-### Общие проблемы
-
-1. **CSRF ошибки**
-   ```bash
-   # Очистка сессий
-   ./clear_sessions_script.sh
-   ```
-
-2. **HTTPS недоступен**
-   ```bash
-   # Проверка SSL сертификатов
-   ./fix_https_emergency.sh
-   ```
-
-3. **Проблемы с базой данных**
-   ```bash
-   # Перезапуск PostgreSQL
-   docker restart benjforum_postgres
-   ```
-
-### Логи
-
-Просмотр логов контейнеров:
-```bash
-docker logs benjforum_web
-docker logs benjforum_nginx
-docker logs benjforum_postgres
-```
-
-## 📊 Мониторинг
-
-### Health Check
-
-Скрипт мониторинга доступен:
-```bash
-./health_monitor.sh
-```
-
-### Статус сервисов
-
-Проверка состояния всех контейнеров:
-```bash
-docker-compose ps
-```
-
-## 🧪 Тестирование
-
-### Автоматические тесты
-
-```bash
-# Запуск тестов
-docker exec -it benjforum_web python -m pytest
-
-# Проверка CSRF
-./csrf_test.sh
-```
-
-## 🚀 Деплой
-
-### Production готовность
-
-Репозиторий содержит:
-- ✅ Полностью настроенную Docker инфраструктуру
-- ✅ Production конфигурации
-- ✅ SSL сертификаты
-- ✅ Автоматические скрипты деплоя
-- ✅ Мониторинг и логирование
-- ✅ Backup стратегии
-
-### Автоматический деплой
-
-```bash
-cd deployment_package
-./quick_deploy_fixed.sh
-```
-
-## 👥 Команда
-
-**Автор:** MiniMax Agent  
-**Дата создания:** 1 декабря 2025  
-**Версия:** 1.0 (Финальная)
-
-## 📄 Лицензия
-
-Этот проект создан для образовательных и демонстрационных целей.
-
-## 🤝 Поддержка
-
-Для получения поддержки:
-1. Проверьте раздел "Устранение неполадок"
-2. Изучите логи контейнеров
-3. Используйте скрипты диагностики
-
----
-
-**⭐ Если проект полезен, поставьте звезду на GitHub!**
+This is free software and you are welcome to modify and redistribute it under the conditions described in the license.
+For the complete license, refer to LICENSE.rst

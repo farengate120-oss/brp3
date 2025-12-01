@@ -1,0 +1,173 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=benjforum
+      - POSTGRES_USER=benjforum_user
+      - POSTGRES_PASSWORD=BenjForum_DB_P@ssw0rd_2024!
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    networks:
+      - benjforum_network
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass "BenjForum_Redis_P@ssw0rd_2024!"
+    volumes:
+      - redis_data:/data
+    networks:
+      - benjforum_network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    restart: unless-stopped
+    environment:
+      # Database settings
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=benjforum
+      - POSTGRES_USER=benjforum_user
+      - POSTGRES_PASSWORD=BenjForum_DB_P@ssw0rd_2024!
+      - POSTGRES_PORT=5432
+      
+      # Redis settings
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=BenjForum_Redis_P@ssw0rd_2024!
+      
+      # Django settings
+      - DJANGO_SECRET_KEY=B3njF0rum_Pr0duct10n_S3cr3t_K3y_2024_!@#\$%^&*()
+      - DJANGO_DEBUG=False
+      - DJANGO_ALLOWED_HOSTS=benj.run.place,www.benj.run.place,84.21.189.163,*
+      
+      # CSRF Settings
+      - CSRF_TRUSTED_ORIGINS=http://benj.run.place,http://www.benj.run.place,http://84.21.189.163
+      - CSRF_COOKIE_SECURE=False
+      - SESSION_COOKIE_SECURE=False
+      
+      # Superuser settings
+      - SUPERUSER_USERNAME=admin
+      - SUPERUSER_EMAIL=admin@benj.run.place
+      - SUPERUSER_PASSWORD=BenjForum_Admin_2024!
+      
+      # Email settings
+      - EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+      - EMAIL_HOST=smtp.gmail.com
+      - EMAIL_PORT=587
+      - EMAIL_USE_TLS=True
+      - EMAIL_HOST_USER=your-email@gmail.com
+      - EMAIL_HOST_PASSWORD=your-app-password
+      
+      # Static files
+      - STATIC_URL=/static/
+      - STATIC_ROOT=/app/staticfiles
+      
+      # Media files
+      - MEDIA_URL=/media/
+      - MEDIA_ROOT=/app/media
+      
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./media:/app/media
+      - ./staticfiles:/app/staticfiles
+    networks:
+      - benjforum_network
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    restart: unless-stopped
+    command: celery -A devproject worker --loglevel=info
+    environment:
+      # Database settings
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=benjforum
+      - POSTGRES_USER=benjforum_user
+      - POSTGRES_PASSWORD=BenjForum_DB_P@ssw0rd_2024!
+      - POSTGRES_PORT=5432
+      
+      # Redis settings
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=BenjForum_Redis_P@ssw0rd_2024!
+      
+      # Django settings
+      - DJANGO_SECRET_KEY=B3njF0rum_Pr0duct10n_S3cr3t_K3y_2024_!@#\$%^&*()
+      - DJANGO_DEBUG=False
+      - DJANGO_ALLOWED_HOSTS=benj.run.place,www.benj.run.place,84.21.189.163,*
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./media:/app/media
+      - ./staticfiles:/app/staticfiles
+    networks:
+      - benjforum_network
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    restart: unless-stopped
+    command: celery -A devproject beat --loglevel=info
+    environment:
+      # Database settings
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=benjforum
+      - POSTGRES_USER=benjforum_user
+      - POSTGRES_PASSWORD=BenjForum_DB_P@ssw0rd_2024!
+      - POSTGRES_PORT=5432
+      
+      # Redis settings
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=BenjForum_Redis_P@ssw0rd_2024!
+      
+      # Django settings
+      - DJANGO_SECRET_KEY=B3njF0rum_Pr0duct10n_S3cr3t_K3y_2024_!@#\$%^&*()
+      - DJANGO_DEBUG=False
+      - DJANGO_ALLOWED_HOSTS=benj.run.place,www.benj.run.place,84.21.189.163,*
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./media:/app/media
+      - ./staticfiles:/app/staticfiles
+    networks:
+      - benjforum_network
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-ssl.conf:/etc/nginx/nginx.conf:ro
+      - ./staticfiles:/var/www/static:ro
+      - ./media:/var/www/media:ro
+      - /etc/letsencrypt/live/benj.run.place:/etc/letsencrypt/live/benj.run.place:ro
+      - /etc/letsencrypt/archive/benj.run.place:/etc/letsencrypt/archive/benj.run.place:ro
+    depends_on:
+      - web
+    networks:
+      - benjforum_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  benjforum_network:
+    driver: bridge

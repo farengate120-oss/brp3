@@ -1,0 +1,11 @@
+# Speed up bulding by excluding files from the docker context
+dist/
+docs/
+env/
+venv/
+misago-admin/
+node_modules/
+frontend/
+
+.DS_Store
+thumbs.db
